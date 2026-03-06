@@ -10,7 +10,7 @@ interface LogEntry {
   createdAt: string;
   prompt: string;
   response: string;
-  parsedJson: Record<string, any> | null;
+  parsedJson: any; // FIXED (was unknown)
 }
 
 const MODULE_COLORS: Record<string, string> = {
@@ -50,16 +50,12 @@ export default function LogsPage() {
           AI Prompt <span className="gradient-text">Logs</span>
         </h1>
         <p className="text-white/50">
-          Every AI call is logged — prompt, response, duration, and parsed
-          output.
+          Every AI call is logged — prompt, response, duration, and parsed output.
         </p>
       </div>
 
       {/* Filter */}
-      <div
-        className="flex items-center gap-3 mb-6 animate-fade-up"
-        style={{ animationDelay: "60ms" }}
-      >
+      <div className="flex items-center gap-3 mb-6 animate-fade-up">
         {["", "categorize", "proposal", "impact", "chat"].map((m) => (
           <button
             key={m}
@@ -76,22 +72,22 @@ export default function LogsPage() {
 
         <button
           onClick={fetchLogs}
-          className="ml-auto text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="ml-auto text-xs text-white/40 hover:text-white/70"
         >
           ↻ Refresh
         </button>
       </div>
 
-      {/* Log Entries */}
+      {/* Logs */}
       {loading ? (
         <div className="flex items-center justify-center py-20 text-white/30">
-          <span className="w-6 h-6 border-2 border-white/10 border-t-white/40 rounded-full animate-spin-slow mr-3" />
+          <span className="w-6 h-6 border-2 border-white/10 border-t-white/40 rounded-full animate-spin mr-3" />
           Loading logs...
         </div>
       ) : logs.length === 0 ? (
         <div className="text-center py-20 text-white/30">
           <p className="text-4xl mb-3">📋</p>
-          <p>No logs yet. Run a module to see logs appear here.</p>
+          <p>No logs yet. Run a module to generate logs.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -150,18 +146,14 @@ export default function LogsPage() {
                   <div>
                     <p className="text-xs text-white/40 mb-1.5">PROMPT</p>
                     <pre className="text-xs text-white/60 font-mono bg-black/30 p-3 rounded-lg overflow-x-auto max-h-40 whitespace-pre-wrap">
-                      {log.prompt.slice(0, 800)}
-                      {log.prompt.length > 800 ? "..." : ""}
+                      {log.prompt}
                     </pre>
                   </div>
 
                   <div>
-                    <p className="text-xs text-white/40 mb-1.5">
-                      RAW RESPONSE
-                    </p>
+                    <p className="text-xs text-white/40 mb-1.5">RAW RESPONSE</p>
                     <pre className="text-xs text-white/60 font-mono bg-black/30 p-3 rounded-lg overflow-x-auto max-h-40 whitespace-pre-wrap">
-                      {log.response.slice(0, 600)}
-                      {log.response.length > 600 ? "..." : ""}
+                      {log.response}
                     </pre>
                   </div>
 
