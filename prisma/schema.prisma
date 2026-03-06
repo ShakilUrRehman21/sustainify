@@ -1,0 +1,107 @@
+// Sustainify – Prisma Schema
+// SQLite for demo; change provider to "postgresql" and update DATABASE_URL for production
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Products ────────────────────────────────────────────────────────────────
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String?
+  subcategory String?
+  seoTags     String?  // JSON array stored as string
+  susFilters  String?  // JSON array stored as string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  aiOutputs   AIOutput[]
+
+  @@map("products")
+}
+
+// ─── AI Outputs (Prompt + Response Log) ────────────────────────────────────
+model AIOutput {
+  id         String   @id @default(cuid())
+  module     String   // "categorize" | "proposal" | "impact" | "chat"
+  prompt     String
+  response   String
+  parsedJson String?  // Validated JSON result
+  success    Boolean  @default(true)
+  errorMsg   String?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  productId  String?
+  product    Product? @relation(fields: [productId], references: [id])
+
+  @@map("ai_outputs")
+}
+
+// ─── B2B Proposals ──────────────────────────────────────────────────────────
+model B2BProposal {
+  id              String   @id @default(cuid())
+  companyName     String?
+  requirements    String
+  budget          Float
+  productMix      String   // JSON array
+  budgetAlloc     String   // JSON object
+  costBreakdown   String   // JSON object
+  impactSummary   String
+  totalCost       Float?
+  createdAt       DateTime @default(now())
+
+  @@map("b2b_proposals")
+}
+
+// ─── Orders ─────────────────────────────────────────────────────────────────
+model Order {
+  id           String   @id @default(cuid())
+  orderNumber  String   @unique
+  customerName String
+  status       String   @default("pending") // pending | shipped | delivered | cancelled | refund_requested
+  items        String   // JSON array of order items
+  total        Float
+  placedAt     DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  chatLogs     ChatLog[]
+
+  @@map("orders")
+}
+
+// ─── Impact Reports ─────────────────────────────────────────────────────────
+model ImpactReport {
+  id                   String   @id @default(cuid())
+  inputData            String   // JSON of products + quantities
+  plasticSavedKg       Float
+  carbonAvoidedKg      Float
+  localImpactSummary   String
+  humanReadableStmt    String
+  calculationBreakdown String   // JSON
+  createdAt            DateTime @default(now())
+
+  @@map("impact_reports")
+}
+
+// ─── Chat Logs (WhatsApp Support) ────────────────────────────────────────────
+model ChatLog {
+  id         String   @id @default(cuid())
+  sessionId  String
+  from       String   // "user" | "bot"
+  message    String
+  intent     String?  // "order_status" | "return_policy" | "refund" | "general"
+  orderId    String?
+  order      Order?   @relation(fields: [orderId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([sessionId])
+  @@map("chat_logs")
+}
