@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateProposal } from "@/lib/ai/services/proposal.service";
 import { proposalRequestSchema } from "@/lib/validators/schemas";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
