@@ -28,7 +28,7 @@ export function buildImpactPrompt(input: ImpactPromptInput): string {
   return `You are the Impact Calculation Engine for "Sustainify".
 Your task is to estimate the environmental impact of a batch of sustainable products.
 
-CRITICAL: Return ONLY a valid JSON object. No markdown formatting, no explanations.es:
+CRITICAL: Return ONLY a valid JSON object. No markdown formatting, no explanations.
 
 CALCULATION GUIDELINES:
 - Plastic saved (kg): Use category averages:

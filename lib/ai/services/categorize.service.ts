@@ -66,17 +66,21 @@ export async function categorizeProduct(
         // 5. Save to database
         let productId: string | undefined;
         if (input.productName) {
-            const product = await db.product.create({
-                data: {
-                    name: input.productName,
-                    description: input.description,
-                    category: data.category,
-                    subcategory: data.subcategory,
-                    seoTags: JSON.stringify(data.seo_tags),
-                    susFilters: JSON.stringify(data.sustainability_filters),
-                },
-            });
-            productId = product.id;
+            try {
+                const product = await db.product.create({
+                    data: {
+                        name: input.productName,
+                        description: input.description,
+                        category: data.category,
+                        subcategory: data.subcategory,
+                        seoTags: JSON.stringify(data.seo_tags),
+                        susFilters: JSON.stringify(data.sustainability_filters),
+                    },
+                });
+                productId = product.id;
+            } catch (dbErr) {
+                console.warn("[CategorizeService] DB product create warning:", dbErr);
+            }
         }
 
         // 6. Log to AIOutput

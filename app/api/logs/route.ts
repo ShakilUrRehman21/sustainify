@@ -38,10 +38,20 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            data: logs.map((l) => ({
-                ...l,
-                parsedJson: l.parsedJson ? JSON.parse(l.parsedJson) : null,
-            })),
+            data: logs.map((l) => {
+                let parsed = null;
+                if (l.parsedJson) {
+                    try {
+                        parsed = JSON.parse(l.parsedJson);
+                    } catch {
+                        parsed = { raw: l.parsedJson };
+                    }
+                }
+                return {
+                    ...l,
+                    parsedJson: parsed,
+                };
+            }),
             pagination: {
                 page,
                 limit,

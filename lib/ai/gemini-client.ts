@@ -5,23 +5,29 @@
 
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY environment variable is not set.");
-}
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// Reuse the same model instance
+let _genAI: GoogleGenerativeAI | null = null;
 let _model: GenerativeModel | null = null;
+
+function getGenAI(): GoogleGenerativeAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY environment variable is not set. Please configure it in your .env file.");
+  }
+  if (!_genAI) {
+    _genAI = new GoogleGenerativeAI(apiKey);
+  }
+  return _genAI;
+}
 
 export function getGeminiModel(): GenerativeModel {
   if (!_model) {
-    _model = genAI.getGenerativeModel({
+    const ai = getGenAI();
+    _model = ai.getGenerativeModel({
       model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.2,       // Low temperature → consistent, structured output
         topP: 0.8,
-        maxOutputTokens: 8192,  // Increased from 2048 to handle full proposal JSON
+        maxOutputTokens: 8192,  // Increased to handle full proposal JSON
       },
     });
   }

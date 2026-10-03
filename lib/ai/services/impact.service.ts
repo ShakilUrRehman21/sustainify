@@ -54,16 +54,20 @@ export async function generateImpactReport(
         const data = validated.data;
 
         // Persist report
-        await db.impactReport.create({
-            data: {
-                inputData: JSON.stringify(input.products),
-                plasticSavedKg: data.plastic_saved_kg,
-                carbonAvoidedKg: data.carbon_avoided_kg,
-                localImpactSummary: data.local_impact_summary,
-                humanReadableStmt: data.human_readable_statement,
-                calculationBreakdown: JSON.stringify(data.calculation_breakdown ?? {}),
-            },
-        });
+        try {
+            await db.impactReport.create({
+                data: {
+                    inputData: JSON.stringify(input.products),
+                    plasticSavedKg: data.plastic_saved_kg,
+                    carbonAvoidedKg: data.carbon_avoided_kg,
+                    localImpactSummary: data.local_impact_summary,
+                    humanReadableStmt: data.human_readable_statement,
+                    calculationBreakdown: JSON.stringify(data.calculation_breakdown ?? {}),
+                },
+            });
+        } catch (dbErr) {
+            console.warn("[ImpactService] DB impact report create warning:", dbErr);
+        }
 
         const logId = await logAICall({
             module: "impact",

@@ -69,18 +69,22 @@ export async function generateProposal(
         }
 
         // 5. Persist to DB
-        await db.b2BProposal.create({
-            data: {
-                companyName: input.companyName ?? null,
-                requirements: input.requirements,
-                budget: input.budget,
-                productMix: JSON.stringify(data.product_mix),
-                budgetAlloc: JSON.stringify(data.budget_allocation),
-                costBreakdown: JSON.stringify(data.cost_breakdown),
-                impactSummary: data.impact_summary,
-                totalCost: totalCost,
-            },
-        });
+        try {
+            await db.b2BProposal.create({
+                data: {
+                    companyName: input.companyName ?? null,
+                    requirements: input.requirements,
+                    budget: input.budget,
+                    productMix: JSON.stringify(data.product_mix),
+                    budgetAlloc: JSON.stringify(data.budget_allocation),
+                    costBreakdown: JSON.stringify(data.cost_breakdown),
+                    impactSummary: data.impact_summary,
+                    totalCost: totalCost,
+                },
+            });
+        } catch (dbErr) {
+            console.warn("[ProposalService] DB proposal create warning:", dbErr);
+        }
 
         // 6. Log
         const logId = await logAICall({

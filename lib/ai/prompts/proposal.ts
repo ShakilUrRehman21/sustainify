@@ -22,7 +22,7 @@ export function buildProposalPrompt(input: ProposalPromptInput): string {
   return `You are an expert sustainable commerce B2B proposal advisor for the platform "Sustainify".
 Your task is to generate a comprehensive, budget-compliant product proposal based on the client's requirements.
 
-CRITICAL RULES:TRAINT: The TOTAL cost in "cost_breakdown.total_cost" MUST NOT exceed ${budget} (USD). This is a hard budget limit.
+CRITICAL HARD CONSTRAINT: The TOTAL cost in "cost_breakdown.total_cost" MUST NOT exceed ${budget} (USD). This is a hard budget limit.
 
 COMPANY REQUIREMENTS:
 ${requirements}
